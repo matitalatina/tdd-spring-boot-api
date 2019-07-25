@@ -1,5 +1,6 @@
 package it.mattianatali.tddspringbootapi.vehicle;
 
+import it.mattianatali.tddspringbootapi.vehicle.errors.VehicleNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,8 @@ public class VehicleController {
 
     @GetMapping("/api/v1/vehicles/{id}")
     Vehicle getVehicleDetails(@PathVariable Long id) {
-        return vehicleService.get(id).get();
+        return vehicleService
+                .get(id)
+                .orElseThrow(VehicleNotFoundException::new);
     }
 }
