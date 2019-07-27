@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static it.mattianatali.tddspringbootapi.VehicleFixtures.aValidVehicle;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -48,5 +49,19 @@ class VehicleServiceTest {
                 .thenReturn(Optional.empty());
 
         assertTrue(vehicleService.get(vehicleId).isEmpty());
+    }
+
+    @Test
+    void create_shouldSaveTheVehicle() {
+        var vehicleToSave = aValidVehicle();
+        var expectedVehicle = aValidVehicle().toBuilder().id(12L).build();
+
+        when(vehicleRepository.save(vehicleToSave))
+                .thenReturn(expectedVehicle);
+
+        assertEquals(
+                expectedVehicle,
+                vehicleService.save(vehicleToSave)
+        );
     }
 }

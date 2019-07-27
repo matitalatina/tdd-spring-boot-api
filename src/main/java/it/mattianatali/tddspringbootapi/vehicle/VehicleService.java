@@ -19,6 +19,6 @@ public class VehicleService {
     }
 
     public Vehicle save(Vehicle vehicleToSave) {
-        return null;
+        return vehicleRepository.save(vehicleToSave);
     }
 }

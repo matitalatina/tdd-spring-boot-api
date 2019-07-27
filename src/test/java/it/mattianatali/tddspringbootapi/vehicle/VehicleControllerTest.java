@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static it.mattianatali.tddspringbootapi.VehicleFixtures.aValidVehicle;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -112,13 +113,5 @@ class VehicleControllerTest {
                 validVehicle.toBuilder().year(null).build(),
                 validVehicle.toBuilder().year(1949).build()
         );
-    }
-
-    private static Vehicle aValidVehicle() {
-        return Vehicle.builder()
-                .brand("Ferrari")
-                .model("488 GTB")
-                .year(2019)
-                .build();
     }
 }
