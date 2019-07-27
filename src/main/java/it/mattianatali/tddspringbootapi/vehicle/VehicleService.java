@@ -17,4 +17,8 @@ public class VehicleService {
     public Optional<Vehicle> get(long vehicleId) {
         return vehicleRepository.findById(vehicleId);
     }
+
+    public Vehicle save(Vehicle vehicleToSave) {
+        return null;
+    }
 }

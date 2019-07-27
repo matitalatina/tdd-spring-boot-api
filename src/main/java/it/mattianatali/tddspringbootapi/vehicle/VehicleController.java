@@ -2,9 +2,8 @@ package it.mattianatali.tddspringbootapi.vehicle;
 
 import it.mattianatali.tddspringbootapi.vehicle.errors.VehicleNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class VehicleController {
@@ -20,5 +19,11 @@ public class VehicleController {
         return vehicleService
                 .get(id)
                 .orElseThrow(VehicleNotFoundException::new);
+    }
+
+    @PostMapping("/api/v1/vehicles")
+    @ResponseStatus(HttpStatus.CREATED)
+    Vehicle saveVehicle(@RequestBody Vehicle vehicle) {
+        return vehicleService.save(vehicle);
     }
 }

@@ -1,10 +1,12 @@
 package it.mattianatali.tddspringbootapi.vehicle;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -13,6 +15,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,6 +25,9 @@ class VehicleControllerTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockBean
     private VehicleService vehicleService;
@@ -54,5 +60,38 @@ class VehicleControllerTest {
 
         mvc.perform(get("/api/v1/vehicles/" + vehicleId))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void create_shouldSaveTheVehicle() throws Exception {
+        var vehicleId = 1L;
+        var vehicleToSave = aValidVehicle();
+
+        when(vehicleService.save(vehicleToSave))
+                .thenReturn(
+                        vehicleToSave
+                                .toBuilder()
+                                .id(vehicleId)
+                                .build()
+                );
+
+        mvc.perform(
+                post("/api/v1/vehicles")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(vehicleToSave))
+        )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id", is((int) vehicleId)))
+                .andExpect(jsonPath("$.brand", is(vehicleToSave.getBrand())))
+                .andExpect(jsonPath("$.model", is(vehicleToSave.getModel())))
+                .andExpect(jsonPath("$.year", is(vehicleToSave.getYear())));
+    }
+
+    private Vehicle aValidVehicle() {
+        return Vehicle.builder()
+                .brand("Ferrari")
+                .model("488 GTB")
+                .year(2019)
+                .build();
     }
 }
