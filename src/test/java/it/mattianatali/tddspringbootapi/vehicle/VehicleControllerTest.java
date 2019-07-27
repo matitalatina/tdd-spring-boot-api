@@ -3,6 +3,8 @@ package it.mattianatali.tddspringbootapi.vehicle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -11,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
@@ -87,7 +90,31 @@ class VehicleControllerTest {
                 .andExpect(jsonPath("$.year", is(vehicleToSave.getYear())));
     }
 
-    private Vehicle aValidVehicle() {
+    @ParameterizedTest
+    @MethodSource("getInvalidVehicles")
+    void create_shouldReturnBadRequestIfBodyIsInvalid(Vehicle invalidVehicle) throws Exception {
+        mvc.perform(
+                post("/api/v1/vehicles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(invalidVehicle))
+        )
+                .andExpect(status().isBadRequest());
+    }
+
+    private static Stream<Vehicle> getInvalidVehicles() {
+        var validVehicle = aValidVehicle();
+
+        return Stream.of(
+                validVehicle.toBuilder().brand(null).build(),
+                validVehicle.toBuilder().brand("").build(),
+                validVehicle.toBuilder().model(null).build(),
+                validVehicle.toBuilder().model("").build(),
+                validVehicle.toBuilder().year(null).build(),
+                validVehicle.toBuilder().year(1949).build()
+        );
+    }
+
+    private static Vehicle aValidVehicle() {
         return Vehicle.builder()
                 .brand("Ferrari")
                 .model("488 GTB")

@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 public class VehicleController {
     private VehicleService vehicleService;
@@ -23,7 +25,7 @@ public class VehicleController {
 
     @PostMapping("/api/v1/vehicles")
     @ResponseStatus(HttpStatus.CREATED)
-    Vehicle saveVehicle(@RequestBody Vehicle vehicle) {
+    Vehicle saveVehicle(@RequestBody @Valid Vehicle vehicle) {
         return vehicleService.save(vehicle);
     }
 }
